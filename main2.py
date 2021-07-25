@@ -15,6 +15,12 @@ img = PhotoImage(file="game_photo.png")
 label = Label(  my_tk,image=img)
 label.place(x=0, y=0)
 
+my_label = Label(my_tk, text="All rights reserved to Mohammad Mubaslat & Hamzeh Saleh")
+my_label.pack()
+my_label.place(x=160, y=440)
+my_label.config(font=("Courier", 11))
+
+
 BLUE = (30, 144, 255)
 BLACK = (255, 255, 255)
 RED = (255, 0, 0)
@@ -199,20 +205,7 @@ def easy_button_fun():
                 valid_locations.append(col)
         return valid_locations
 
-    def pick_best_move(board, piece):
-        valid_locations = get_valid_locations(board)
-        best_score = -10000
-        best_col = random.choice(valid_locations)
-        for col in valid_locations:
-            row = get_next_open_row(board, col)
-            temp_board = board.copy()
-            drop_piece(temp_board, row, col, piece)
-            score = score_position(temp_board, piece)
-            if score > best_score:
-                best_score = score
-                best_col = col
 
-        return best_col
 
     def draw_board(board):
         for c in range(COLUMN_COUNT):
@@ -308,15 +301,16 @@ def easy_button_fun():
                 turn = turn % 2
 
         if game_over:
-            pygame.time.wait(3000)
+            pygame.time.wait(1500)
+            my_tk.destroy()
 
 
 
 
 def friend_button_fun():
-    newWindow = Toplevel(my_tk)
-    newWindow.geometry("750x500")
-    Label(newWindow, image=img).pack()
+ #   newWindow = Toplevel(my_tk)
+ #   newWindow.geometry("750x500")
+ #   Label(newWindow, image=img).pack()
 
     def draw_board(board):
         for c in range(COLUMN_COUNT):
@@ -397,7 +391,8 @@ def friend_button_fun():
                 turn += 1
                 turn = turn % 2
                 if game_over:
-                    pygame.time.wait(3000)
+                    pygame.time.wait(1500)
+                    my_tk.destroy()
 
 
 
@@ -406,25 +401,30 @@ def computer_button_fun():
     newWindow2.geometry("750x500")
     Label(newWindow2, image=img).pack()
 
+    my_label = Label(newWindow2, text="Select game level :" )
+    my_label.pack()
+    my_label.place(x=270, y=170)
+    my_label.config(font=("Courier", 15))
+
     easy_button = Button(newWindow2, text='Easy',height=2 , width=20 ,  command= easy_button_fun)
     easy_button.pack()
-    easy_button.place(x=290, y=220)
+    easy_button.place(x=320, y=230)
 
-    med_button = Button(newWindow2, text='Normal',height=2 , width=20 )
+    med_button = Button(newWindow2, text='Normal',height=2 , width=20 ,  command= easy_button_fun)
     med_button.pack()
-    med_button.place(x=290, y=290)
+    med_button.place(x=320, y=300)
 
-    hard_button = Button(newWindow2, text='Hard', height=2, width=20 )
+    hard_button = Button(newWindow2, text='Hard', height=2, width=20 ,  command= easy_button_fun)
     hard_button.pack()
-    hard_button.place(x=290, y=360)
+    hard_button.place(x=320, y=370)
 
 friend_button = Button(my_tk, text='Play with friend',height=2 , width=30, command= friend_button_fun)
 friend_button.pack()
-friend_button.place(x=290, y=250)
+friend_button.place(x=300, y=250)
 
 computer_button = Button(my_tk, text='Play with computer',height=2 , width=30, command=computer_button_fun)
 computer_button.pack()
-computer_button.place(x=290, y=350)
+computer_button.place(x=300, y=350)
 
 my_tk.mainloop()
 
