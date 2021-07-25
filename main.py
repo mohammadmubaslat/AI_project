@@ -226,6 +226,9 @@ board = create_board()
 print_board(board)
 game_over = False
 
+
+
+
 pygame.init()
 
 SQUARESIZE = 100

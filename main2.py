@@ -1,14 +1,10 @@
 
-
-
-
 from tkinter import *
 import numpy as np
 import random
 import pygame
 import sys
 import math
-
 
 
 my_tk = Tk()
@@ -19,76 +15,80 @@ img = PhotoImage(file="game_photo.png")
 label = Label(  my_tk,image=img)
 label.place(x=0, y=0)
 
+BLUE = (30, 144, 255)
+BLACK = (255, 255, 255)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
+
+ROW_COUNT = 6
+COLUMN_COUNT = 7
+
+PLAYER = 0
+AI = 1
+EMPTY = 0
+PLAYER_PIECE = 1
+AI_PIECE = 2
+WINDOW_LENGTH = 4
+SQUARESIZE = 60
+width = COLUMN_COUNT * SQUARESIZE
+height = (ROW_COUNT + 1) * SQUARESIZE
+size = (width, height)
+RADIUS = int(SQUARESIZE / 2 - 5)
+
+def create_board():
+    board = np.zeros((ROW_COUNT, COLUMN_COUNT))
+    return board
+
+def drop_piece(board, row, col, piece):
+    board[row][col] = piece
+
+
+def is_valid_location(board, col):
+    return board[ROW_COUNT - 1][col] == 0
+
+
+def get_next_open_row(board, col):
+    for r in range(ROW_COUNT):
+        if board[r][col] == 0:
+            return r
+
+
+def print_board(board):
+    print(np.flip(board, 0))
+
+
+def winning_move(board, piece):
+    # Check horizontal locations for win
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT):
+            if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][
+                c + 3] == piece:
+                return True
+
+    # Check vertical locations for win
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][
+                c] == piece:
+                return True
+
+    # Check positively sloped diaganols
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and \
+                    board[r + 3][c + 3] == piece:
+                return True
+
+    # Check negatively sloped diaganols
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(3, ROW_COUNT):
+            if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and \
+                    board[r - 3][c + 3] == piece:
+                return True
+
+
 
 def easy_button_fun():
-
-
-
-    BLUE = (30,144,255)
-    BLACK = (255,255,255)
-    RED = (255, 0, 0)
-    YELLOW = (255, 255, 0)
-
-    ROW_COUNT = 6
-    COLUMN_COUNT = 7
-
-    PLAYER = 0
-    AI = 1
-
-    EMPTY = 0
-    PLAYER_PIECE = 1
-    AI_PIECE = 2
-
-    WINDOW_LENGTH = 4
-
-    def create_board():
-        board = np.zeros((ROW_COUNT, COLUMN_COUNT))
-        return board
-
-    def drop_piece(board, row, col, piece):
-        board[row][col] = piece
-
-    def is_valid_location(board, col):
-        return board[ROW_COUNT - 1][col] == 0
-
-    def get_next_open_row(board, col):
-        for r in range(ROW_COUNT):
-            if board[r][col] == 0:
-                return r
-
-    def print_board(board):
-        print(np.flip(board, 0))
-
-    def winning_move(board, piece):
-        # Check horizontal locations for win
-        for c in range(COLUMN_COUNT - 3):
-            for r in range(ROW_COUNT):
-                if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][
-                    c + 3] == piece:
-                    return True
-
-        # Check vertical locations for win
-        for c in range(COLUMN_COUNT):
-            for r in range(ROW_COUNT - 3):
-                if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][
-                    c] == piece:
-                    return True
-
-        # Check positively sloped diaganols
-        for c in range(COLUMN_COUNT - 3):
-            for r in range(ROW_COUNT - 3):
-                if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and \
-                        board[r + 3][
-                            c + 3] == piece:
-                    return True
-
-        # Check negatively sloped diaganols
-        for c in range(COLUMN_COUNT - 3):
-            for r in range(3, ROW_COUNT):
-                if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and \
-                        board[r - 3][
-                            c + 3] == piece:
-                    return True
 
     def evaluate_window(window, piece):
         score = 0
@@ -231,26 +231,19 @@ def easy_button_fun():
                         int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)), RADIUS)
         pygame.display.update()
 
+
+
     board = create_board()
     print_board(board)
     game_over = False
 
     pygame.init()
 
-    SQUARESIZE = 100
-
-    width = COLUMN_COUNT * SQUARESIZE
-    height = (ROW_COUNT + 1) * SQUARESIZE
-
-    size = (width, height)
-
-    RADIUS = int(SQUARESIZE / 2 - 5)
-
     screen = pygame.display.set_mode(size)
     draw_board(board)
     pygame.display.update()
 
-    myfont = pygame.font.SysFont("monospace", 75)
+    myfont = pygame.font.SysFont("monospace", 30)
 
     turn = random.randint(PLAYER, AI)
 
@@ -281,7 +274,7 @@ def easy_button_fun():
                         drop_piece(board, row, col, PLAYER_PIECE)
 
                         if winning_move(board, PLAYER_PIECE):
-                            label = myfont.render("Player 1 wins!!", 1, RED)
+                            label = myfont.render("You win!!", 1, RED)
                             screen.blit(label, (40, 10))
                             game_over = True
 
@@ -304,12 +297,12 @@ def easy_button_fun():
                 drop_piece(board, row, col, AI_PIECE)
 
                 if winning_move(board, AI_PIECE):
-                    label = myfont.render("Player 2 wins!!", 1, YELLOW)
+                    label = myfont.render("Computer win!!", 1, YELLOW)
                     screen.blit(label, (40, 10))
                     game_over = True
 
                 print_board(board)
-                #   draw_board(board)
+                draw_board(board)
 
                 turn += 1
                 turn = turn % 2
@@ -317,70 +310,13 @@ def easy_button_fun():
         if game_over:
             pygame.time.wait(3000)
 
+
+
+
 def friend_button_fun():
     newWindow = Toplevel(my_tk)
     newWindow.geometry("750x500")
     Label(newWindow, image=img).pack()
-
-    import numpy as np
-    import pygame
-    import sys
-    import math
-
-    BLUE = (0, 0, 255)
-    BLACK = (0, 0, 0)
-    RED = (255, 0, 0)
-    YELLOW = (255, 255, 0)
-
-    ROW_COUNT = 6
-    COLUMN_COUNT = 7
-
-    def create_board():
-        board = np.zeros((ROW_COUNT, COLUMN_COUNT))
-        return board
-
-    def drop_piece(board, row, col, piece):
-        board[row][col] = piece
-
-    def is_valid_location(board, col):
-        return board[ROW_COUNT - 1][col] == 0
-
-    def get_next_open_row(board, col):
-        for r in range(ROW_COUNT):
-            if board[r][col] == 0:
-                return r
-
-    def print_board(board):
-        print(np.flip(board, 0))
-
-    def winning_move(board, piece):
-        # Check horizontal locations for win
-        for c in range(COLUMN_COUNT - 3):
-            for r in range(ROW_COUNT):
-                if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][
-                    c + 3] == piece:
-                    return True
-
-        # Check vertical locations for win
-        for c in range(COLUMN_COUNT):
-            for r in range(ROW_COUNT - 3):
-                if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][
-                    c] == piece:
-                    return True
-
-        # Check positively sloped diaganols
-        for c in range(COLUMN_COUNT - 3):
-            for r in range(ROW_COUNT - 3):
-                if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and \
-                        board[r + 3][c + 3] == piece:
-                    return True
-
-        # Check negatively sloped diaganols
-        for c in range(COLUMN_COUNT - 3):
-            for r in range(3, ROW_COUNT):
-                if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and \
-                        board[r - 3][c + 3] == piece:
-                    return True
 
     def draw_board(board):
         for c in range(COLUMN_COUNT):
@@ -405,24 +341,12 @@ def friend_button_fun():
     turn = 0
 
     pygame.init()
-
-    SQUARESIZE = 100
-
-    width = COLUMN_COUNT * SQUARESIZE
-    height = (ROW_COUNT + 1) * SQUARESIZE
-
-    size = (width, height)
-
-    RADIUS = int(SQUARESIZE / 2 - 5)
-
     screen = pygame.display.set_mode(size)
     draw_board(board)
     pygame.display.update()
-
-    myfont = pygame.font.SysFont("monospace", 75)
+    myfont = pygame.font.SysFont("monospace", 30)
 
     while not game_over:
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -477,7 +401,6 @@ def friend_button_fun():
 
 
 
-
 def computer_button_fun():
     newWindow2 = Toplevel(my_tk)
     newWindow2.geometry("750x500")
@@ -495,21 +418,13 @@ def computer_button_fun():
     hard_button.pack()
     hard_button.place(x=290, y=360)
 
-
-
-
-
 friend_button = Button(my_tk, text='Play with friend',height=2 , width=30, command= friend_button_fun)
 friend_button.pack()
 friend_button.place(x=290, y=250)
 
-
 computer_button = Button(my_tk, text='Play with computer',height=2 , width=30, command=computer_button_fun)
 computer_button.pack()
 computer_button.place(x=290, y=350)
-
-
-
 
 my_tk.mainloop()
 
